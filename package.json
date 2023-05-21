@@ -3,8 +3,8 @@
     "typescript": "^5.0.4"
   },
   "scripts": {
-    "run": "npx tsc && node index.js",
-    "watch": "npx tsc -w",
+    "start": "npx tsc -outDir dist && node dist/index.js",
+    "watch": "npx tsc -w -outDir dist",
     "nocompile": "node index.js"
   }
 }
