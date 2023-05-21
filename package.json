@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "typescript": "^5.0.4"
+  },
+  "scripts": {
+    "run": "npx tsc && node index.js",
+    "watch": "npx tsc -w",
+    "nocompile": "node index.js"
+  }
+}
