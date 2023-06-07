@@ -36,30 +36,25 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var data_source_1 = require("./data-source");
-var User_1 = require("./entity/User");
-data_source_1.AppDataSource.initialize().then(function () { return __awaiter(void 0, void 0, void 0, function () {
-    var user, users;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                console.log("Inserting a new user into the database...");
-                user = new User_1.User();
-                user.firstName = "Timber";
-                user.lastName = "Saw";
-                user.age = 25;
-                return [4 /*yield*/, data_source_1.AppDataSource.manager.save(user)];
-            case 1:
-                _a.sent();
-                console.log("Saved a new user with id: " + user.id);
-                console.log("Loading users from the database...");
-                return [4 /*yield*/, data_source_1.AppDataSource.manager.find(User_1.User)];
-            case 2:
-                users = _a.sent();
-                console.log("Loaded users: ", users);
-                console.log("Here you can setup and run express / fastify / any other framework.");
+exports.Migration1685322689900 = void 0;
+var Migration1685322689900 = /** @class */ (function () {
+    function Migration1685322689900() {
+    }
+    Migration1685322689900.prototype.up = function (queryRunner) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
                 return [2 /*return*/];
-        }
-    });
-}); }).catch(function (error) { return console.log(error); });
-//# sourceMappingURL=index.js.map
+            });
+        });
+    };
+    Migration1685322689900.prototype.down = function (queryRunner) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/];
+            });
+        });
+    };
+    return Migration1685322689900;
+}());
+exports.Migration1685322689900 = Migration1685322689900;
+//# sourceMappingURL=1685322689900-migration.js.map

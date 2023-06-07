@@ -10,4 +10,6 @@ Rules of Engagement:
 7. If I cannot complete the project in the given time, I will receive a punishment (100 pushups, 100 squats, a 5-minute plank, etc.) that I will complete at the beginning of the Sunday Stream.
 8. The project must always be completed even if the 8-hour time frame elapses
 
-Acceptance Criteria: Able receive messages and send corresponding messages/do corresponding tasks, and connects to twitch websocket. Initial Commands, !Donate, !Goal, !Social, !Projects
+
+Acceptance Criteria: read messages in the chat and send corresponding messages/do corresponding tasks, and connects to twitch websocket. Initial Commands, !Donate, !Goal, !Social, !Projects
+

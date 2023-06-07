@@ -1,2 +1,9 @@
+.idea/
+.vscode/
 node_modules/
-yarn.lock
+build/
+tmp/
+temp/
+test-db.sql
+.env
+yarn-error.log
