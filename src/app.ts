@@ -33,7 +33,7 @@ AppDataSource.initialize().then(async () => {
     const client = new tmi.Client({
         options: { debug: true },
         identity: {
-            username: 'toluafo',
+            username: 'bongogpt',
             password: `oauth:${authConfig.oauth_token}`
         },
         channels: ['toluafo']
