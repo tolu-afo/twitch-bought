@@ -11,7 +11,8 @@
       "typescript": "^5.0.4"
    },
    "scripts": {
-      "start": "ts-node src/app.ts",
+      "build": "tsc -outDir dist",
+      "start": "node dist/app.js",
       "watch": "npx tsc -w -outDir dist",
       "nocompile": "node dist/app.js",
       "typeorm": "typeorm-ts-node-commonjs"

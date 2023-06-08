@@ -36,18 +36,36 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// don't forget to comment your code!!!
-var tmi_js_1 = require("tmi.js");
+var tmi = require("tmi.js");
+var express = require("express");
 var auth_config_1 = require("./auth.config");
 var data_source_1 = require("./data-source");
 var Poll_1 = require("./entity/Poll");
+var StateManager_1 = require("./StateManager");
+// step 1. Add Express Server - done
+// step 3. add active poll state, and reconfigure poll command - done
+// stop new polls from coming if their is an active poll - done
+// vote for polls with just a number - done
+// step 3. add docker to deploy project
+// step 4. add nginx to run project
+// step 5. deploy?
+// typeORM Client
 data_source_1.AppDataSource.initialize().then(function () { return __awaiter(void 0, void 0, void 0, function () {
-    var client;
+    var state, app, client;
     return __generator(this, function (_a) {
-        client = new tmi_js_1.default.Client({
+        state = new StateManager_1.default();
+        state.add('active_poll', null);
+        app = express();
+        app.listen(3000, function () {
+            console.log("Express Server listening on Port 3000");
+        });
+        app.get("/", function (req, res) {
+            res.sendStatus(200);
+        });
+        client = new tmi.Client({
             options: { debug: true },
             identity: {
-                username: 'toluafo',
+                username: 'bongogpt',
                 password: "oauth:".concat(auth_config_1.default.oauth_token)
             },
             channels: ['toluafo']
@@ -55,80 +73,197 @@ data_source_1.AppDataSource.initialize().then(function () { return __awaiter(voi
         client.connect().catch(function (err) {
             console.log(err);
         });
-        client.on('message', function (channel, tags, message, self) {
-            if (self)
-                return;
-            var msg = message.toLowerCase();
-            if (msg.split(' ')[0] === '!poll') {
-                var _a = msg.split('|'), _ = _a[0], question = _a[1], opt1 = _a[2], opt2 = _a[3];
-                var poll_1 = new Poll_1.Poll();
-                poll_1.question = question;
-                client.say(channel, "New Poll just started!!! ".concat(question, ", press 1 for ").concat(opt1, ", and 2 for ").concat(opt2));
-                setTimeout(function () {
-                    client.say(channel, "Poll Ended; Winner: ".concat(poll_1.getWinner()));
-                });
-            }
-            switch (msg) {
-                case '!help': {
-                    client.say(channel, "commands are; !help, !hello, !donate, !goal, !social, !poll | <question> | <option1> | <option2>");
-                    break;
+        client.on('message', function (channel, tags, message, self) { return __awaiter(void 0, void 0, void 0, function () {
+            var msg, getWinner, createPoll, votePoll, getTally, split_msg, _a, _, question, opt1, opt2, pollId_1, _b, cached;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        if (self)
+                            return [2 /*return*/];
+                        msg = message.toLowerCase();
+                        getWinner = function (poll) {
+                            if (poll.count1 > poll.count2) {
+                                return poll.option1;
+                            }
+                            else if (poll.count2 > poll.count2) {
+                                return poll.option2;
+                            }
+                            else {
+                                return "It's a Tie!";
+                            }
+                        };
+                        createPoll = function (question, opt1, opt2) { return __awaiter(void 0, void 0, void 0, function () {
+                            var poll, pollId;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        poll = new Poll_1.Poll();
+                                        poll.question = question;
+                                        poll.option1 = opt1;
+                                        poll.option2 = opt2;
+                                        return [4 /*yield*/, data_source_1.AppDataSource.manager.save(poll)];
+                                    case 1:
+                                        _a.sent();
+                                        pollId = poll.id;
+                                        state.add('active_poll', poll.id);
+                                        client.say(channel, "New Poll just started!!! Poll #".concat(poll.id, " ").concat(question, ", press 1 for ").concat(opt1, ", and 2 for ").concat(opt2));
+                                        return [2 /*return*/, pollId];
+                                }
+                            });
+                        }); };
+                        votePoll = function (vote) { return __awaiter(void 0, void 0, void 0, function () {
+                            var pollId, poll;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        pollId = state.get('active_poll');
+                                        return [4 /*yield*/, data_source_1.AppDataSource.getRepository(Poll_1.Poll).findOneBy({ id: parseInt(pollId) })];
+                                    case 1:
+                                        poll = _a.sent();
+                                        if (!poll) return [3 /*break*/, 3];
+                                        if (vote === 1) {
+                                            // the user voted for the first option
+                                            poll.count1 = poll.count1 + 1;
+                                        }
+                                        else if (vote === 2) {
+                                            poll.count2 = poll.count2 + 1;
+                                        }
+                                        return [4 /*yield*/, data_source_1.AppDataSource.manager.save(poll)];
+                                    case 2:
+                                        _a.sent();
+                                        _a.label = 3;
+                                    case 3: return [2 /*return*/];
+                                }
+                            });
+                        }); };
+                        getTally = function () { return __awaiter(void 0, void 0, void 0, function () {
+                            var pollId, poll;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        pollId = state.get('active_poll');
+                                        return [4 /*yield*/, data_source_1.AppDataSource.getRepository(Poll_1.Poll).findOneBy({ id: parseInt(pollId) })];
+                                    case 1:
+                                        poll = _a.sent();
+                                        if (poll) {
+                                            client.say(channel, "The ".concat(poll.question, " Poll vote is currently at ").concat(poll.option1, ":").concat(poll.count1, " and ").concat(poll.option2, ":").concat(poll.count2));
+                                        }
+                                        return [2 /*return*/];
+                                }
+                            });
+                        }); };
+                        if (state.get('active_poll') && (msg === '1' || msg === '2')) {
+                            // there is an active poll
+                            votePoll(parseInt(msg));
+                        }
+                        split_msg = msg.split(' ');
+                        if (!(split_msg.length > 1)) return [3 /*break*/, 3];
+                        if (!(split_msg[0] === '!poll')) return [3 /*break*/, 2];
+                        _a = msg.split(' | '), _ = _a[0], question = _a[1], opt1 = _a[2], opt2 = _a[3];
+                        return [4 /*yield*/, createPoll(question, opt1, opt2)];
+                    case 1:
+                        pollId_1 = _c.sent();
+                        setTimeout(function () { return __awaiter(void 0, void 0, void 0, function () {
+                            var poll;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, data_source_1.AppDataSource.getRepository(Poll_1.Poll).findOneBy({ id: pollId_1 })];
+                                    case 1:
+                                        poll = _a.sent();
+                                        client.say(channel, "Poll is over! The winner is, ".concat(getWinner(poll)));
+                                        poll.is_over = true;
+                                        state.add('active_poll', null);
+                                        return [4 /*yield*/, data_source_1.AppDataSource.manager.save(poll)];
+                                    case 2:
+                                        _a.sent();
+                                        return [2 /*return*/];
+                                }
+                            });
+                        }); }, 1000 * 60 * 5);
+                        _c.label = 2;
+                    case 2: return [3 /*break*/, 16];
+                    case 3:
+                        _b = msg;
+                        switch (_b) {
+                            case '!help': return [3 /*break*/, 4];
+                            case '!hello': return [3 /*break*/, 5];
+                            case '!donate': return [3 /*break*/, 6];
+                            case '!discord': return [3 /*break*/, 7];
+                            case '!goal': return [3 /*break*/, 8];
+                            case '!social': return [3 /*break*/, 9];
+                            case '!cache': return [3 /*break*/, 10];
+                            case '!whosecached': return [3 /*break*/, 11];
+                            case "!tally": return [3 /*break*/, 12];
+                        }
+                        return [3 /*break*/, 15];
+                    case 4:
+                        {
+                            client.say(channel, "commands are; !help, !hello, !donate, !goal, !social, !poll | <question> | <option1> | <option2>");
+                            return [3 /*break*/, 16];
+                        }
+                        _c.label = 5;
+                    case 5:
+                        {
+                            client.say(channel, "@".concat(tags.username, ", what's up!"));
+                            return [3 /*break*/, 16];
+                        }
+                        _c.label = 6;
+                    case 6:
+                        {
+                            client.say(channel, "Click here to donate! https://streamlabs.com/toluafo/tip");
+                            return [3 /*break*/, 16];
+                        }
+                        _c.label = 7;
+                    case 7:
+                        {
+                            client.say(channel, "Click here to join our Discord! https://discord.gg/9Gsxy5h6");
+                            return [3 /*break*/, 16];
+                        }
+                        _c.label = 8;
+                    case 8:
+                        {
+                            client.say(channel, "Our Current stream goal is 150 Followers!");
+                            return [3 /*break*/, 16];
+                        }
+                        _c.label = 9;
+                    case 9:
+                        {
+                            client.say(channel, "Tolu's Socials: IG: www.instagram.com/toluafo_, twitter: www.twitter.com/toluafo_, youtube: www.youtube.com/@ToluAfo, github: www.github.com/tolu-afo");
+                            return [3 /*break*/, 16];
+                        }
+                        _c.label = 10;
+                    case 10:
+                        {
+                            state.add('user', tags.username);
+                            return [3 /*break*/, 16];
+                        }
+                        _c.label = 11;
+                    case 11:
+                        {
+                            cached = state.get('user');
+                            client.say(channel, "The last user to be cached was @".concat(cached));
+                            return [3 /*break*/, 16];
+                        }
+                        _c.label = 12;
+                    case 12:
+                        if (!state.get('active_poll')) return [3 /*break*/, 14];
+                        return [4 /*yield*/, getTally()];
+                    case 13:
+                        _c.sent();
+                        return [3 /*break*/, 15];
+                    case 14:
+                        client.say(channel, "There is currently no active poll");
+                        _c.label = 15;
+                    case 15:
+                        {
+                            return [3 /*break*/, 16];
+                        }
+                        _c.label = 16;
+                    case 16: return [2 /*return*/];
                 }
-                case '!hello': {
-                    client.say(channel, "@".concat(tags.username, ", what's up!"));
-                    break;
-                }
-                case '!donate': {
-                    client.say(channel, "Click here to donate! https://streamlabs.com/toluafo/tip");
-                    break;
-                }
-                case '!goal': {
-                    client.say(channel, "Our Current stream goal is 150 Followers!");
-                    break;
-                }
-                case '!social': {
-                    client.say(channel, "Tolu's Socials: IG: www.instagram.com/toluafo_, twitter: www.twitter.com/toluafo_, youtube: www.youtube.com/@ToluAfo, github: www.github.com/tolu-afo");
-                    break;
-                }
-                case '!vote': {
-                    // cmd 1 or 2
-                    // example: !vote 1 or !vote 2
-                }
-                default: {
-                    break;
-                }
-            }
-        });
+            });
+        }); });
         return [2 /*return*/];
     });
 }); });
-// class Poll {
-//     opt1: string;
-//     opt2: string;
-//     cnt1: number;
-//     cnt2: number;
-//     constructor(opt1: string, opt2: string) {
-//         this.opt1 = opt1;
-//         this.opt2 = opt2;
-//         this.cnt1 = 0;
-//         this.cnt2 = 0;
-//     }
-//     getWinner() : string {
-//         if (this.cnt1 > this.cnt2){
-//             return this.opt1
-//         }
-//         else if (this.cnt2 > this.cnt2){
-//             return this.opt2
-//         }
-//         else{
-//             return this.opt2
-//         }
-//     }
-//     voteOpt1() {
-//         this.cnt1 ++;
-//     }
-//     voteOpt2() {
-//         this.cnt2 ++;
-//     }
-// }
-// !Donate, !Goal, !Social, !Projects
 //# sourceMappingURL=app.js.map

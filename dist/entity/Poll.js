@@ -32,17 +32,17 @@ var Poll = exports.Poll = /** @class */ (function () {
         __metadata("design:type", String)
     ], Poll.prototype, "option2", void 0);
     __decorate([
-        (0, typeorm_1.Column)(),
+        (0, typeorm_1.Column)({ default: 0 }),
         __metadata("design:type", Number)
     ], Poll.prototype, "count1", void 0);
     __decorate([
-        (0, typeorm_1.Column)(),
+        (0, typeorm_1.Column)({ default: 0 }),
         __metadata("design:type", Number)
     ], Poll.prototype, "count2", void 0);
     __decorate([
-        (0, typeorm_1.Column)(),
-        __metadata("design:type", Date)
-    ], Poll.prototype, "end_time", void 0);
+        (0, typeorm_1.Column)({ default: false }),
+        __metadata("design:type", Boolean)
+    ], Poll.prototype, "is_over", void 0);
     Poll = __decorate([
         (0, typeorm_1.Entity)()
     ], Poll);

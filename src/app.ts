@@ -6,7 +6,7 @@ import { Poll } from './entity/Poll';
 import StateManager from './StateManager';
 
 // step 1. Add Express Server - done
-// step 3. add active poll state, and reconfigure poll command
+// step 3. add active poll state, and reconfigure poll command - done
     // stop new polls from coming if their is an active poll - done
     // vote for polls with just a number - done
 // step 3. add docker to deploy project
@@ -131,6 +131,10 @@ AppDataSource.initialize().then(async () => {
                 }
                 case '!donate': {
                     client.say(channel, `Click here to donate! https://streamlabs.com/toluafo/tip`);
+                    break;
+                }
+                case '!discord': {
+                    client.say(channel, `Click here to join our Discord! https://discord.gg/9Gsxy5h6`);
                     break;
                 }
                 case '!goal': {

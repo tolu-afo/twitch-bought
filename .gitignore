@@ -8,3 +8,4 @@ test-db.sql
 .env
 yarn-error.log
 *.code-workspace
+*.session.sql
