@@ -63,7 +63,7 @@ data_source_1.AppDataSource.initialize().then(function () { return __awaiter(voi
             res.sendStatus(200);
         });
         client = new tmi.Client({
-            options: { debug: true },
+            options: { debug: auth_config_1.default.debug },
             identity: {
                 username: 'bongogpt',
                 password: "oauth:".concat(auth_config_1.default.oauth_token)
@@ -82,6 +82,7 @@ data_source_1.AppDataSource.initialize().then(function () { return __awaiter(voi
                             return [2 /*return*/];
                         msg = message.toLowerCase();
                         getWinner = function (poll) {
+                            // returns winner of poll winner
                             if (poll.count1 > poll.count2) {
                                 return poll.option1;
                             }
@@ -181,7 +182,7 @@ data_source_1.AppDataSource.initialize().then(function () { return __awaiter(voi
                             });
                         }); }, 1000 * 60 * 5);
                         _c.label = 2;
-                    case 2: return [3 /*break*/, 16];
+                    case 2: return [3 /*break*/, 17];
                     case 3:
                         _b = msg;
                         switch (_b) {
@@ -189,77 +190,84 @@ data_source_1.AppDataSource.initialize().then(function () { return __awaiter(voi
                             case '!hello': return [3 /*break*/, 5];
                             case '!donate': return [3 /*break*/, 6];
                             case '!discord': return [3 /*break*/, 7];
-                            case '!goal': return [3 /*break*/, 8];
-                            case '!social': return [3 /*break*/, 9];
-                            case '!cache': return [3 /*break*/, 10];
-                            case '!whosecached': return [3 /*break*/, 11];
-                            case "!tally": return [3 /*break*/, 12];
+                            case '!projects': return [3 /*break*/, 8];
+                            case '!goal': return [3 /*break*/, 9];
+                            case '!social': return [3 /*break*/, 10];
+                            case '!cache': return [3 /*break*/, 11];
+                            case '!whosecached': return [3 /*break*/, 12];
+                            case "!tally": return [3 /*break*/, 13];
                         }
-                        return [3 /*break*/, 15];
+                        return [3 /*break*/, 16];
                     case 4:
                         {
                             client.say(channel, "commands are; !help, !hello, !donate, !goal, !social, !poll | <question> | <option1> | <option2>");
-                            return [3 /*break*/, 16];
+                            return [3 /*break*/, 17];
                         }
                         _c.label = 5;
                     case 5:
                         {
                             client.say(channel, "@".concat(tags.username, ", what's up!"));
-                            return [3 /*break*/, 16];
+                            return [3 /*break*/, 17];
                         }
                         _c.label = 6;
                     case 6:
                         {
                             client.say(channel, "Click here to donate! https://streamlabs.com/toluafo/tip");
-                            return [3 /*break*/, 16];
+                            return [3 /*break*/, 17];
                         }
                         _c.label = 7;
                     case 7:
                         {
                             client.say(channel, "Click here to join our Discord! https://discord.gg/9Gsxy5h6");
-                            return [3 /*break*/, 16];
+                            return [3 /*break*/, 17];
                         }
                         _c.label = 8;
                     case 8:
                         {
-                            client.say(channel, "Our Current stream goal is 150 Followers!");
-                            return [3 /*break*/, 16];
+                            client.say(channel, "Click here to see our projects! https://github.com/tolu-afo?tab=repositories ");
+                            return [3 /*break*/, 17];
                         }
                         _c.label = 9;
                     case 9:
                         {
-                            client.say(channel, "Tolu's Socials: IG: www.instagram.com/toluafo_, twitter: www.twitter.com/toluafo_, youtube: www.youtube.com/@ToluAfo, github: www.github.com/tolu-afo");
-                            return [3 /*break*/, 16];
+                            client.say(channel, "Our Current stream goal is 150 Followers!");
+                            return [3 /*break*/, 17];
                         }
                         _c.label = 10;
                     case 10:
                         {
-                            state.add('user', tags.username);
-                            return [3 /*break*/, 16];
+                            client.say(channel, "Tolu's Socials: IG: www.instagram.com/toluafo_, twitter: www.twitter.com/toluafo_, youtube: www.youtube.com/@ToluAfo, github: www.github.com/tolu-afo");
+                            return [3 /*break*/, 17];
                         }
                         _c.label = 11;
                     case 11:
                         {
-                            cached = state.get('user');
-                            client.say(channel, "The last user to be cached was @".concat(cached));
-                            return [3 /*break*/, 16];
+                            state.add('user', tags.username);
+                            return [3 /*break*/, 17];
                         }
                         _c.label = 12;
                     case 12:
-                        if (!state.get('active_poll')) return [3 /*break*/, 14];
-                        return [4 /*yield*/, getTally()];
-                    case 13:
-                        _c.sent();
-                        return [3 /*break*/, 15];
-                    case 14:
-                        client.say(channel, "There is currently no active poll");
-                        _c.label = 15;
-                    case 15:
                         {
-                            return [3 /*break*/, 16];
+                            cached = state.get('user');
+                            client.say(channel, "The last user to be cached was @".concat(cached));
+                            return [3 /*break*/, 17];
                         }
+                        _c.label = 13;
+                    case 13:
+                        if (!state.get('active_poll')) return [3 /*break*/, 15];
+                        return [4 /*yield*/, getTally()];
+                    case 14:
+                        _c.sent();
+                        return [3 /*break*/, 16];
+                    case 15:
+                        client.say(channel, "There is currently no active poll");
                         _c.label = 16;
-                    case 16: return [2 /*return*/];
+                    case 16:
+                        {
+                            return [3 /*break*/, 17];
+                        }
+                        _c.label = 17;
+                    case 17: return [2 /*return*/];
                 }
             });
         }); });

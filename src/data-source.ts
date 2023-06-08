@@ -1,14 +1,15 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
 import { Poll } from "./entity/Poll"
+import authConfig from "./auth.config"
 
 export const AppDataSource = new DataSource({
     type: "postgres",
-    host: "localhost",
+    host: authConfig.db_host,
     port: 5432,
-    username: "postgres",
-    password: "toluafo",
-    database: "test-db",
+    username: authConfig.db_username,
+    password: authConfig.db_password,
+    database: authConfig.db_name,
     synchronize: true,
     logging: false,
     entities: [Poll],
