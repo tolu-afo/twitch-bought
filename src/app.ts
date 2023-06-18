@@ -31,7 +31,7 @@ AppDataSource.initialize().then(async () => {
 
     // twitch bot client
     const client = new tmi.Client({
-        options: { debug: true },
+        options: { debug: authConfig.debug },
         identity: {
             username: 'bongogpt',
             password: `oauth:${authConfig.oauth_token}`
@@ -49,6 +49,8 @@ AppDataSource.initialize().then(async () => {
         const msg = message.toLowerCase();
         
         const getWinner = (poll: Poll)=> {
+            // returns winner of poll winner
+            
             if (poll.count1 > poll.count2){
                 return poll.option1
             }
@@ -137,6 +139,10 @@ AppDataSource.initialize().then(async () => {
                     client.say(channel, `Click here to join our Discord! https://discord.gg/9Gsxy5h6`);
                     break;
                 }
+                case '!projects': {
+                    client.say(channel, `Click here to see our projects! https://github.com/tolu-afo?tab=repositories `);
+                    break;
+                }
                 case '!goal': {
                     client.say(channel, `Our Current stream goal is 150 Followers!`);
                     break;
@@ -160,7 +166,6 @@ AppDataSource.initialize().then(async () => {
                     }else{
                         client.say(channel, `There is currently no active poll`);
                     }
-
                 }
                 default: {
                     break;
@@ -168,6 +173,5 @@ AppDataSource.initialize().then(async () => {
             }
         }
     });
-
 })
 
